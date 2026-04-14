@@ -22,7 +22,6 @@
         .glass { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,0,0,0.05); }
         .sidebar { transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; }
 
-        /* نظام الأكورديون (أسود وأحمر) */
         .rule-card { 
             background: var(--card-black); 
             border: 1px solid var(--border-red); 
@@ -44,7 +43,6 @@
         
         .rule-title { font-weight: 800; font-size: 1.1rem; color: #fff; letter-spacing: 0.5px; }
         
-        /* زر التبديل + و - */
         .toggle-btn {
             width: 32px;
             height: 32px;
@@ -68,7 +66,6 @@
             font-size: 0.95rem;
         }
 
-        /* الحالة النشطة */
         .rule-card.active { border-color: var(--main-red); box-shadow: 0 0 20px rgba(255, 0, 0, 0.05); }
         .rule-card.active .rule-content { max-height: 1000px; padding-bottom: 20px; border-top: 1px solid var(--border-red); }
         .rule-card.active .toggle-btn { background: var(--main-red); color: white; transform: rotate(180deg); }
@@ -102,17 +99,15 @@
         <div class="flex flex-col gap-3">
             <button onclick="showSection('home')" class="p-4 text-right font-bold rounded-xl flex items-center justify-between hover:bg-red-600/10 transition">الرئيسية <i class="fas fa-home"></i></button>
             <button onclick="showSection('news')" class="p-4 text-right font-bold rounded-xl flex items-center justify-between hover:bg-red-600/10 transition">الأخبار <i class="fas fa-bullhorn"></i></button>
-            <button onclick="showSection('rules')" class="p-4 text-right font-bold rounded-xl flex items-center justify-between hover:bg-red-600/10 transition text-red-600">القوانين <i class="fas fa-gavel"></i></button>
+            <button onclick="showSection('rules')" class="p-4 text-right font-bold rounded-xl flex items-center justify-between hover:bg-red-600/10 transition">القوانين <i class="fas fa-gavel"></i></button>
             <button onclick="showSection('apps')" class="p-4 text-right font-bold rounded-xl flex items-center justify-between hover:bg-red-600/10 transition">التقديمات <i class="fas fa-id-card"></i></button>
             <hr class="border-white/5 my-4">
-            <a href="./admin.html" id="admin-btn" ...
-            class="hidden p-4 text-right font-bold text-red-600 border border-red-600/20 rounded-xl flex items-center justify-between italic">لوحة التحكم <i class="fas fa-user-shield"></i></a>
+            <a href="./admin.html" id="admin-btn" class="hidden p-4 text-right font-bold text-red-600 border border-red-600/20 rounded-xl flex items-center justify-between italic">لوحة التحكم <i class="fas fa-user-shield"></i></a>
             <button onclick="logout()" class="p-4 text-right text-sm text-zinc-600 hover:text-red-600 mt-auto">تسجيل الخروج</button>
         </div>
     </div>
 
     <main class="pt-32 pb-10 px-6 max-w-4xl mx-auto">
-        
         <section id="sec-home" class="animate__animated animate__fadeIn text-center">
             <div class="relative inline-block mb-10">
                 <img src="logo.png" class="w-44 h-44 mx-auto relative z-10 drop-shadow-[0_0_50px_rgba(255,0,0,0.3)]">
@@ -135,12 +130,8 @@
         </section>
 
         <section id="sec-rules" class="hidden animate__animated animate__fadeIn">
-            <div class="flex items-center gap-4 mb-10">
-                <div class="h-10 w-2 bg-red-600 rounded-full"></div>
-                <h2 class="text-4xl font-black italic">قوانين السيرفر</h2>
-            </div>
-            <div id="rules-container">
-                </div>
+            <h2 class="text-4xl font-black italic mb-10 border-r-8 border-red-600 pr-5">قوانين السيرفر</h2>
+            <div id="rules-container"></div>
         </section>
 
         <section id="sec-news" class="hidden animate__animated animate__fadeIn">
@@ -152,7 +143,6 @@
             <h2 class="text-4xl font-black italic mb-10 border-r-8 border-red-600 pr-5 text-red-600">مركز التوظيف</h2>
             <div id="apps-container" class="grid md:grid-cols-2 gap-6"></div>
         </section>
-
     </main>
 
     <div id="modal-app" class="fixed inset-0 hidden glass z-[500] flex items-center justify-center p-4">
@@ -162,7 +152,7 @@
                 <button onclick="closeAppModal()" class="text-zinc-500 hover:text-white"><i class="fas fa-times text-2xl"></i></button>
             </div>
             <div id="modal-questions" class="space-y-6"></div>
-            <button onclick="submitForm()" id="submit-btn" class="w-full bg-red-600 text-white py-5 rounded-2xl font-black mt-10 hover:bg-red-700 shadow-xl shadow-red-600/20 transition">إرسال الطلب الآن</button>
+            <button onclick="submitForm()" id="submit-btn" class="w-full bg-red-600 text-white py-5 rounded-2xl font-black mt-10 hover:bg-red-700 transition shadow-xl shadow-red-600/20">إرسال الطلب الآن</button>
         </div>
     </div>
 
@@ -177,6 +167,49 @@
 
         document.getElementById('menu-btn').onclick = () => document.getElementById('sidebar').style.right = '0';
         document.getElementById('close-btn').onclick = () => document.getElementById('sidebar').style.right = '-320px';
+
+        function startLogin() { window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`; }
+
+        window.onload = async () => {
+            const fragment = new URLSearchParams(window.location.hash.slice(1));
+            let token = fragment.get('access_token');
+            
+            if (token) {
+                localStorage.setItem('dc_token', token);
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                token = localStorage.getItem('dc_token');
+            }
+
+            if (token) {
+                try {
+                    const res = await fetch('https://discord.com/api/users/@me', { headers: { authorization: `Bearer ${token}` } });
+                    const user = await res.json();
+                    
+                    if (user.id) {
+                        localStorage.setItem('respect_user', JSON.stringify(user));
+                        const { data: ban } = await _supabase.from('blacklist').select('*').eq('user_id', user.id).single();
+                        if (ban) {
+                            document.getElementById('blacklist-screen').classList.remove('hidden');
+                            document.getElementById('ban-reason').innerText = `بسبب: ${ban.reason}`;
+                            return;
+                        }
+                        currentUser = user;
+                        document.getElementById('login-block').classList.add('hidden');
+                        document.getElementById('welcome-block').classList.remove('hidden');
+                        document.getElementById('u-name').innerText = user.username;
+                        document.getElementById('u-img').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
+                        
+                        const { data: staff } = await _supabase.from('staff').select('*').eq('user_id', user.id).single();
+                        if (user.id === "1413745713439047807" || staff) {
+                            document.getElementById('admin-btn').classList.remove('hidden');
+                        }
+                    }
+                } catch (e) {
+                    localStorage.removeItem('dc_token');
+                }
+            }
+        };
 
         function showSection(id) {
             document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
@@ -193,44 +226,20 @@
                 <div class="rule-card">
                     <div class="rule-header" onclick="this.parentElement.classList.toggle('active')">
                         <span class="rule-title">${r.title}</span>
-                        <div class="toggle-btn">
-                            <i class="fas fa-plus"></i>
-                        </div>
+                        <div class="toggle-btn"><i class="fas fa-plus"></i></div>
                     </div>
-                    <div class="rule-content">
-                        ${r.content}
-                    </div>
-                </div>`).join('') || '<p class="text-center text-zinc-600">لا توجد قوانين حالياً</p>';
+                    <div class="rule-content">${r.content}</div>
+                </div>`).join('') || '';
         }
 
-        // باقي دوال التشغيل (Login, Apps, News) تبقى كما هي مع تغيير المسميات للجدول الجديد
-        function startLogin() { window.location.href = `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=token&scope=identify`; }
-
-        window.onload = async () => {
-            const fragment = new URLSearchParams(window.location.hash.slice(1));
-            let token = fragment.get('access_token') || localStorage.getItem('dc_token');
-            if (token) {
-                localStorage.setItem('dc_token', token);
-                window.location.hash = "";
-                const res = await fetch('https://discord.com/api/users/@me', { headers: { authorization: `Bearer ${token}` } });
-                const user = await res.json();
-                if (user.id) {
-                    const { data: ban } = await _supabase.from('blacklist').select('*').eq('user_id', user.id).single();
-                    if (ban) {
-                        document.getElementById('blacklist-screen').classList.remove('hidden');
-                        document.getElementById('ban-reason').innerText = `بسبب: ${ban.reason}`;
-                        return;
-                    }
-                    currentUser = user;
-                    document.getElementById('login-block').classList.add('hidden');
-                    document.getElementById('welcome-block').classList.remove('hidden');
-                    document.getElementById('u-name').innerText = user.username;
-                    document.getElementById('u-img').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-                    const { data: staff } = await _supabase.from('staff').select('*').eq('user_id', user.id).single();
-                    if (user.id === "1413745713439047807" || staff) document.getElementById('admin-btn').classList.remove('hidden');
-                }
-            }
-        };
+        async function loadNews() {
+            const { data } = await _supabase.from('news').select('*').order('created_at', {ascending: false});
+            document.getElementById('news-container').innerHTML = data?.map(n => `
+                <div class="glass p-6 rounded-2xl border-r-4 border-red-600">
+                    <h3 class="text-xl font-bold mb-2">${n.title}</h3>
+                    <p class="text-zinc-500 text-sm leading-relaxed">${n.content}</p>
+                </div>`).join('') || '';
+        }
 
         async function loadApps() {
             const { data } = await _supabase.from('forms').select('*');
@@ -242,7 +251,7 @@
                             ${a.is_open ? 'OPEN' : 'CLOSED'}
                         </span>
                     </div>
-                    <p class="text-zinc-600 text-sm mb-8 leading-relaxed">${a.desc || 'لا يوجد وصف متاح لهذا القسم حالياً.'}</p>
+                    <p class="text-zinc-600 text-sm mb-8 leading-relaxed">${a.desc || 'لا يوجد وصف متاح.'}</p>
                     <button onclick="openForm('${a.id}')" ${!a.is_open ? 'disabled' : ''} 
                         class="w-full py-4 rounded-xl font-black transition ${a.is_open ? 'bg-white text-black hover:bg-red-600 hover:text-white' : 'bg-zinc-900 text-zinc-700 cursor-not-allowed'}">
                         ${a.is_open ? 'تقديم الآن' : 'التوظيف مغلق'}
@@ -266,11 +275,11 @@
 
         async function submitForm() {
             const btn = document.getElementById('submit-btn');
-            btn.disabled = true; btn.innerText = "جاري المعالجة...";
-            const results = [];
-            document.querySelectorAll('.q-in').forEach(el => {
-                results.push({ name: currentAppData.questions[el.dataset.idx].text, value: el.value || "بدون إجابة" });
-            });
+            btn.disabled = true; btn.innerText = "جاري الإرسال...";
+            const results = Array.from(document.querySelectorAll('.q-in')).map(el => ({
+                name: currentAppData.questions[el.dataset.idx].text,
+                value: el.value || "بدون إجابة"
+            }));
             try {
                 if(currentAppData.webhook) {
                     await fetch(currentAppData.webhook, {
@@ -289,17 +298,8 @@
                 }
                 alert("تم إرسال طلبك بنجاح!");
                 closeAppModal();
-            } catch (e) { alert("فشل الإرسال، تأكد من اتصالك"); }
+            } catch (e) { alert("فشل الإرسال"); }
             finally { btn.disabled = false; btn.innerText = "إرسال الطلب الآن"; }
-        }
-
-        async function loadNews() {
-            const { data } = await _supabase.from('news').select('*').order('created_at', {ascending: false});
-            document.getElementById('news-container').innerHTML = data?.map(n => `
-                <div class="glass p-6 rounded-2xl border-r-4 border-red-600">
-                    <h3 class="text-xl font-bold mb-2">${n.title}</h3>
-                    <p class="text-zinc-500 text-sm leading-relaxed">${n.content}</p>
-                </div>`).join('') || '';
         }
 
         function closeAppModal() { document.getElementById('modal-app').classList.add('hidden'); }
